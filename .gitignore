@@ -19,6 +19,7 @@ Session.vim
 # Neovim
 nvim/plugin/packer_compiled.lua
 nvim/.luarc.json
+nvim/nvim-pack-lock.json
 
 # Undo / cache / state
 nvim/undo/
