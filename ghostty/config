@@ -4,8 +4,6 @@ quick-terminal-size               = 65%
 quick-terminal-position           = bottom
 quick-terminal-animation-duration = 0
 
-# quick-terminal-command = /bin/zsh -lc "tmux attach-session -t 0 || tmux"
-
 # graphics
 window-vsync                      = false
 background-opacity                = 1.0
@@ -15,3 +13,15 @@ background-blur                   = false
 font-family = Maple Mono NF
 font-size = 16
 theme = dark:Rose Pine,light:Rose Pine Dawn
+window-decoration = false
+
+# Tmux settings
+command = /bin/zsh -lc "tmux attach-session -t 0 || tmux"
+
+# New tmux window
+keybind = cmd+t=text:\x02c
+# Previous/next tmux window
+keybind = cmd+shift+left_bracket=text:\x02p
+keybind = cmd+shift+right_bracket=text:\x02n
+# Close current tmux window
+keybind = cmd+w=text:\x02&
