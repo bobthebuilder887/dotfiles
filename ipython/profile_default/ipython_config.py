@@ -451,7 +451,7 @@ c.InteractiveShell.colors = 'neutral'
 
 ## Set to show a tip when IPython starts.
 #  Default: True
-# c.InteractiveShell.enable_tip = True
+c.InteractiveShell.enable_tip = False
 
 ## Total length of command history
 #  Default: 10000
