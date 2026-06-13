@@ -1,5 +1,4 @@
 -- HIGH
--- TODO: Move tmux, zsh and ipython configurations into .config and then put everything on git
 -- TODO: VERSION-CONTROL Need to improve my diff workflow for comparing both undo file histories (debug gpt version for git)
 -- TODO: Clickhouse support, especially better syntax support but also some LSP
 -- TODO: Lua-lsp needs to also be able to autocomplete require('plugin') type calls (+ go to plugin definition)
@@ -192,9 +191,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   group    = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
   callback = function() vim.hl.on_yank() end,
 })
--------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
 -- Edit configs settings
--------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
 function _G.ReloadConfig()
   local ok, err = pcall(function()
     -- clear cached lua modules (so changes actually reload)
@@ -237,8 +236,9 @@ vim.keymap.set("n", "<leader>o",  ReloadConfig,                        { desc = 
 vim.keymap.set("n", "<leader>C",  edit_cfg,                            { desc = "Edit Nvim config"              })
 vim.keymap.set("n", "<leader>mm", check_msg,                           { desc = "check error log"               })
 vim.keymap.set("n", "<leader>L",  edit_ftp,                            { desc = "check error log"               })
-
+-----------------------------------------------------------------------------------------------------------------------
 -- Working with wrapped text
+-----------------------------------------------------------------------------------------------------------------------
 vim.keymap.set({ "n", "x", "v" }, "j", "gj")
 vim.keymap.set({ "n", "x", "v" }, "k", "gk")
 vim.keymap.set({ "n", "x", "v" }, "0", "g0")
@@ -550,9 +550,20 @@ if vim.g.neovide then
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-L>",  "<C-W>L",           { desc = "Move window to the right"  })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-_>",  "<C-W>=",           { desc = "Equalize windows"          })
 
-  -- TODO make these commands reset the previous window state if pressed again
-  -- If it is possible to preserve the windows maybe we could just open current buffer in a new tab?
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-1>",  ":1tabn<CR>",       { desc = "Go to tab 1"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-2>",  ":2tabn<CR>",       { desc = "Go to tab 2"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-3>",  ":3tabn<CR>",       { desc = "Go to tab 3"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-4>",  ":4tabn<CR>",       { desc = "Go to tab 4"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-5>",  ":5tabn<CR>",       { desc = "Go to tab 5"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-6>",  ":6tabn<CR>",       { desc = "Go to tab 6"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-7>",  ":7tabn<CR>",       { desc = "Go to tab 7"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-8>",  ":8tabn<CR>",       { desc = "Go to tab 8"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-9>",  ":9tabn<CR>",       { desc = "Go to tab 9"               })
+
+  -- TODO make these commands reset the previous window state if pressed a
+  -- If it is possible to preserve the windows maybe we could just open cut buffer in a new tab?
   local function tab_view()
+    -- TODO the logic is incomplete here
 
     local tab = vim.api.nvim_get_current_tabpage()
     local buf = vim.api.nvim_get_current_buf()
