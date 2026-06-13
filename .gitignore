@@ -4,6 +4,7 @@ cagent
 clickhouse
 lazygit
 skhd
+neofetch
 
 # macOS
 .DS_Store
