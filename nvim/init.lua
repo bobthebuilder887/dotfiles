@@ -582,6 +582,56 @@ if vim.g.neovide then
   end
 
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-+>",tab_view,  { desc = "Maximize current window" })
+
+  local function open_lazygit_float()
+    local source_file = vim.api.nvim_buf_get_name(0)
+    local source_dir = source_file ~= ""
+        and vim.fn.fnamemodify(source_file, ":p:h")
+        or vim.fn.getcwd()
+
+    local root = vim.fn.systemlist({
+      "git", "-C", source_dir, "rev-parse", "--show-toplevel"
+    })[1]
+
+    if vim.v.shell_error ~= 0 or not root or root == "" then
+      root = source_dir
+    end
+
+    local width  = math.floor(vim.o.columns * 0.9)
+    local height = math.floor(vim.o.lines * 0.9)
+
+    LazyGitBuf = vim.api.nvim_create_buf(false, true)
+
+    LazyGitWin = vim.api.nvim_open_win(LazyGitBuf, true, {
+      relative = "editor",
+      width = width,
+      height = height,
+      row = math.floor((vim.o.lines - height) / 2),
+      col = math.floor((vim.o.columns - width) / 2),
+      style = "minimal",
+      border = "rounded",
+    })
+
+    vim.fn.termopen("lazygit", {
+      cwd = root,
+      on_exit = function()
+        vim.schedule(function()
+          if LazyGitWin and vim.api.nvim_win_is_valid(LazyGitWin) then
+            vim.api.nvim_win_close(LazyGitWin, true)
+          end
+          if LazyGitBuf and vim.api.nvim_buf_is_valid(LazyGitBuf) then
+            vim.api.nvim_buf_delete(LazyGitBuf, { force = true })
+          end
+          LazyGitWin = nil
+          LazyGitBuf = nil
+        end)
+      end,
+    })
+
+    vim.cmd("startinsert")
+  end
+
+  vim.keymap.set({ "n", "t" }, "<D-G>", open_lazygit_float, { desc = "Open lazygit floating terminal", })
 end
 -----------------------------------------------------------------------------------------------------------------------
 -- PLUGINS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
