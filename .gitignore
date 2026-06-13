@@ -1,0 +1,63 @@
+# apps we do not want to track
+btop
+cagent
+clickhouse
+lazygit
+skhd
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor junk
+*.swp
+*.swo
+*~
+Session.vim
+
+# Neovim
+nvim/plugin/packer_compiled.lua
+nvim/.luarc.json
+
+# Undo / cache / state
+nvim/undo/
+nvim/swap/
+nvim/backup/
+nvim/session/
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# IPython
+ipython/profile_default/history.sqlite
+ipython/profile_default/db/
+ipython/profile_default/log/
+ipython/profile_default/pid/
+ipython/profile_default/security/
+ipython/profile_default/security/*
+ipython/profile_default/startup/*.pyc
+
+# Jupyter
+**/.ipynb_checkpoints/
+
+# tmux resurrect (if you use it)
+tmux/resurrect/
+
+.zcompdump
+zsh/plugins
+# Secrets
+zsh/work.zsh
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Local machine overrides
+local/
+private/

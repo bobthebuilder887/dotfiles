@@ -1,0 +1,17 @@
+# Quick terminal
+keybind                           = global:cmd+§=toggle_quick_terminal
+quick-terminal-size               = 65%
+quick-terminal-position           = bottom
+quick-terminal-animation-duration = 0
+
+# quick-terminal-command = /bin/zsh -lc "tmux attach-session -t 0 || tmux"
+
+# graphics
+window-vsync                      = false
+background-opacity                = 1.0
+background-blur                   = false
+
+# Theme
+font-family = Maple Mono NF
+font-size = 16
+theme = dark:Rose Pine,light:Rose Pine Dawn
