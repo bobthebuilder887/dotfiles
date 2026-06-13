@@ -6,8 +6,8 @@ quick-terminal-animation-duration = 0
 
 # graphics
 window-vsync                      = false
-background-opacity                = 1.0
-background-blur                   = false
+background-opacity                = 0.95
+background-blur                   = true
 
 # Theme
 font-family = Maple Mono NF
