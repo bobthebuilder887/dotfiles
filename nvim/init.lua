@@ -7,7 +7,8 @@
 --  ideally should work upon existing telescope and vimdiff features
 
 -- MEDIUM
--- TODO: better folder navigation (make neovide as stand-alone as possible)
+-- TODO: better folder navigation (add a filetree of some sorts make neovide as stand-alone as possible)
+-- On a new window/tab it should not launch a new buffer but switch to netrw?
 -- TODO: Improve debugging neovim. Make various fallback states if plugins break
 -- TODO: Improve working with config files. Make a dedicated tab for them (don't open same thing in multiple tabs)
 -- TODO: add python specific tools and settings, including linting, jupyter notebook support and formatting
@@ -18,6 +19,7 @@
 
 -- LOW
 -- TODO: force read-only if a file exists and was never edited by me
+-- TODO: Get to know folds (in particular good to have for undotree)
 -- TODO: add treesitter highlights for !shell_cmd and markdown inside of python
 -- TODO: Introduce various variables to make the files more manageable, e.g. global path variables to common directories
 -- TODO: Review the input sources function that assigns keyboard layout icon. Is it really dependant on MacOS?
@@ -66,7 +68,7 @@ local function input_source()
   return names[out] or out:gsub("^com%.apple%.keylayout%.", "")
 end
 
--- TODO look into a more dynamic version of this
+-- TODO look into a more dynamic version of this like in case of multiple windows or no tabs
 function _G.MyWinbar()
   if vim.bo.buftype == "terminal" then
     return ""
@@ -75,14 +77,13 @@ function _G.MyWinbar()
 end
 _G.StatuslineInputSource = input_source
 
-
 -- Visuals
 vim.o.colorcolumn     = '0'
 vim.o.cursorcolumn    = false
 vim.o.cursorline      = true
 
 -- TODO make this context specific
--- vim.o.winbar          = "%{%v:lua.MyWinbar()%}"
+vim.o.winbar          = "%{%v:lua.MyWinbar()%}"
 vim.opt.laststatus    = 3      -- One global status line
 vim.opt.statusline    = " %{toupper(mode())} ┃ %{v:lua.StatuslineInputSource()} ┃ %f%m%r %= %l:%c "
 vim.opt.showmode      = false  -- Don't show separate line for vim mode to not hide commands
@@ -540,8 +541,6 @@ if vim.g.neovide then
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-j>",  "<C-W>j",           { desc = "Go to window below"        })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-k>",  "<C-W>k",           { desc = "Go to window above"        })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-l>",  "<C-W>l",           { desc = "Go to window to the right" })
-  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-o>",  "<C-W>w",           { desc = "Cycle windows forward"     })
-  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-O>",  "<C-W>W",           { desc = "Cycle windows backwards"   })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-H>",  "<C-W>H",           { desc = "Move window to the left"   })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-J>",  "<C-W>J",           { desc = "Move window below"         })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-K>",  "<C-W>K",           { desc = "Move window above"         })
@@ -1093,7 +1092,7 @@ require("blink.cmp").setup({
 },
 })
 
-
+-- TODO: is this even required?
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "sql", "mysql", "plsql", "python" },
   callback = function()
@@ -1124,9 +1123,43 @@ end
 vim.keymap.set({ "v", "x" }, M.a,  send_visual_selection, { desc = "Send visual selection to shell", remap = true })
 
 -----------------------------------------------------------------------------------------------------------------------
+-- FileTree with Oil
+-----------------------------------------------------------------------------------------------------------------------
+vim.pack.add({
+  { src = 'https://github.com/stevearc/oil.nvim'   },
+  { src = 'https://github.com/nvim-mini/mini.icons' },
+  { src = 'https://github.com/nvim-tree/nvim-web-devicons'},
+  { src = 'https://github.com/benomahony/oil-git.nvim'},
+})
+
+-- Declare a global function to retrieve the current directory
+function _G.get_oil_winbar()
+  local bufnr = vim.api.nvim_win_get_buf(vim.g.statusline_winid)
+  local dir = require("oil").get_current_dir(bufnr)
+  if dir then
+    return vim.fn.fnamemodify(dir, ":~")
+  else
+    -- If there is no current directory (e.g. over ssh), just show the buffer name
+    return vim.api.nvim_buf_get_name(0)
+  end
+end
+
+require("oil").setup({
+  win_options = {
+    winbar = "%!v:lua.get_oil_winbar()",
+  },
+})
+
+
+vim.keymap.set("n", "<D-o>", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
+
+-----------------------------------------------------------------------------------------------------------------------
 -- Colorscheme(s)
 -----------------------------------------------------------------------------------------------------------------------
 vim.pack.add({
+   
   { src = 'https://github.com/rebelot/kanagawa.nvim'   },
   { src = 'https://github.com/neanias/everforest-nvim' },
   { src = 'https://github.com/rose-pine/neovim'        },
@@ -1138,3 +1171,6 @@ require("everforest").setup({ italics = false, disable_italic_comments = true, b
 require("kanagawa").setup({keywordStyle = { italic = false},  commentStyle = { italic = false } })
 
 vim.cmd("colorscheme rose-pine")
+
+
+
