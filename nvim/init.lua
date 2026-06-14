@@ -1,6 +1,6 @@
 -- HIGH
 -- TODO: VERSION-CONTROL Need to improve my diff workflow for comparing both undo file histories (debug gpt version for git)
--- TODO: Clickhouse support, especially better syntax support but also some LSP
+-- TODO: Improved ClickHouse support, especially better syntax support but also some LSP support would be amazing
 -- TODO: Lua-lsp needs to also be able to autocomplete require('plugin') type calls (+ go to plugin definition)
 -- TODO: IMPROVE GIT WORKFLOW: - add common git commands / lazygit floating terminal for neovim leader + g/G + command
 --  Need to be able to do something like <leader>go or <leader>Go to open the gitlab link in browser important for ipynb
@@ -14,6 +14,7 @@
 -- TODO: Fix markdown issues for hover windows (so that markdown gets loaded + treesitter) 
 -- TODO: Fix ipython cell not being highlighted properly
 -- TODO: Improve DBUI and DBOUT. In particular improve window and buffer management around this plugin for better workflow with sql
+-- potentially switch to dbee for pagination, better lsp support and query log
 
 -- LOW
 -- TODO: force read-only if a file exists and was never edited by me
@@ -326,7 +327,6 @@ if TermBuf then
   TermWin = buff_win_find(TermBuf)
 end
 
-
 local function term_win_close()
 
   if TermBuf and not vim.api.nvim_buf_is_valid(TermBuf) then
@@ -367,7 +367,6 @@ local function term_win_open()
      end)
   end
 end
-
 
 local function term_win_preview()
   -- save curent window and buffer to switch back
@@ -410,7 +409,6 @@ local function term_win_insert_or_leave()
     term_win_insert()
   end
 end
-
 
 _G.Terminal = {
   open          = term_win_open,
@@ -471,7 +469,7 @@ vim.keymap.set({ "n"           }, "<leader>tq", ":tabclose<CR>",      { desc = "
 -----------------------------------------------------------------------------------------------------------------------
 if vim.g.neovide then
 
-  local default_scale_factor = 1.2
+  local default_scale_factor = 1.1
 
   vim.o.inccommand   = "nosplit"
   vim.o.smoothscroll = false
@@ -530,14 +528,12 @@ if vim.g.neovide then
   -- TODO: think of other common mac os shortcuts. What about windw management?
   -- TODO: Perhaps some way of moving external buffers into new windows?
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-s>",  vim.cmd.write,      { desc = "Save file"                 })
+
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-=>",  upscale,            { desc = "Scale up Neovide"          })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-->",  downscale,          { desc = "Scale down Neovide"        })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-0>",  reset_scale,        { desc = "Reset zoom"                })
-  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-t>",  vim.cmd.tabnew,     { desc = "Open new tab"              })
-  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-w>",  vim.cmd.tabclose,   { desc = "Close a tab"               })
-  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-}>",  vim.cmd.tabnext,    { desc = "Go to next tab"            })
-  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-{>",  vim.cmd.tabprev,    { desc = "Go to previous tab"        })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-R>",  restart_neovide,    { desc = "Restart Neovide"           })
+
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-h>",  "<C-W>h",           { desc = "Go to right window"        })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-j>",  "<C-W>j",           { desc = "Go to window below"        })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-k>",  "<C-W>k",           { desc = "Go to window above"        })
@@ -550,6 +546,10 @@ if vim.g.neovide then
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-L>",  "<C-W>L",           { desc = "Move window to the right"  })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-_>",  "<C-W>=",           { desc = "Equalize windows"          })
 
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-t>",  vim.cmd.tabnew,     { desc = "Open new tab"              })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-w>",  vim.cmd.tabclose,   { desc = "Close a tab"               })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-}>",  vim.cmd.tabnext,    { desc = "Go to next tab"            })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-{>",  vim.cmd.tabprev,    { desc = "Go to previous tab"        })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-1>",  ":1tabn<CR>",       { desc = "Go to tab 1"               })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-2>",  ":2tabn<CR>",       { desc = "Go to tab 2"               })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-3>",  ":3tabn<CR>",       { desc = "Go to tab 3"               })
@@ -584,11 +584,15 @@ if vim.g.neovide then
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-+>",tab_view,  { desc = "Maximize current window" })
 
   local function open_lazygit_float()
+
     local source_file = vim.api.nvim_buf_get_name(0)
+    if vim.fn.filereadable(source_file) ~= 1 or vim.bo[0].buftype ~= "" then
+      return
+    end
+
     local source_dir = source_file ~= ""
         and vim.fn.fnamemodify(source_file, ":p:h")
         or vim.fn.getcwd()
-
     local root = vim.fn.systemlist({
       "git", "-C", source_dir, "rev-parse", "--show-toplevel"
     })[1]
@@ -596,12 +600,9 @@ if vim.g.neovide then
     if vim.v.shell_error ~= 0 or not root or root == "" then
       root = source_dir
     end
-
     local width  = math.floor(vim.o.columns * 0.9)
     local height = math.floor(vim.o.lines * 0.9)
-
     LazyGitBuf = vim.api.nvim_create_buf(false, true)
-
     LazyGitWin = vim.api.nvim_open_win(LazyGitBuf, true, {
       relative = "editor",
       width = width,
@@ -611,7 +612,6 @@ if vim.g.neovide then
       style = "minimal",
       border = "rounded",
     })
-
     vim.fn.termopen("lazygit", {
       cwd = root,
       on_exit = function()
@@ -627,11 +627,9 @@ if vim.g.neovide then
         end)
       end,
     })
-
     vim.cmd("startinsert")
   end
-
-  vim.keymap.set({ "n", "t" }, "<D-G>", open_lazygit_float, { desc = "Open lazygit floating terminal", })
+  vim.keymap.set({ "n" }, "<D-g>", open_lazygit_float, { desc = "Open lazygit floating terminal", })
 end
 -----------------------------------------------------------------------------------------------------------------------
 -- PLUGINS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -764,6 +762,7 @@ local function assign_to_dbui()
   end
 end
 
+-- TODO we can improve this?
 local function fix_dbout_errors(args)
   vim.schedule(function()
 
@@ -1129,7 +1128,6 @@ vim.keymap.set({ "v", "x" }, M.a,  send_visual_selection, { desc = "Send visual 
 -----------------------------------------------------------------------------------------------------------------------
 -- Colorscheme(s)
 -----------------------------------------------------------------------------------------------------------------------
-vim.o.background = "dark"
 
 vim.pack.add({
   { src = 'https://github.com/rebelot/kanagawa.nvim'   },
@@ -1142,4 +1140,16 @@ require("rose-pine").setup({ styles = { italic = false } })
 require("everforest").setup({ italics = false, disable_italic_comments = true, background = 'hard' })
 require("kanagawa").setup({keywordStyle = { italic = false},  commentStyle = { italic = false } })
 
-vim.cmd("colorscheme rose-pine-main")
+local function system_background()
+  local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
+  if not handle then
+    return "light"
+  end
+  local result = handle:read("*a")
+  handle:close()
+  return result:match("Dark") and "dark" or "light"
+end
+
+vim.o.background = system_background()
+
+vim.cmd("colorscheme rose-pine")
