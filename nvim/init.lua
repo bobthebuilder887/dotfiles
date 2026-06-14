@@ -1171,6 +1171,3 @@ require("everforest").setup({ italics = false, disable_italic_comments = true, b
 require("kanagawa").setup({keywordStyle = { italic = false},  commentStyle = { italic = false } })
 
 vim.cmd("colorscheme rose-pine")
-
-
-
