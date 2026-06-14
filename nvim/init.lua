@@ -1,7 +1,7 @@
 -- HIGH
--- TODO: VERSION-CONTROL Need to improve my diff workflow for comparing both undo file histories (debug gpt version for git)
 -- TODO: Improved ClickHouse support, especially better syntax support but also some LSP support would be amazing
 -- TODO: Lua-lsp needs to also be able to autocomplete require('plugin') type calls (+ go to plugin definition)
+-- TODO: VERSION-CONTROL Need to improve my diff workflow for comparing both undo file histories (debug gpt version for git)
 -- TODO: IMPROVE GIT WORKFLOW: - add common git commands / lazygit floating terminal for neovim leader + g/G + command
 --  Need to be able to do something like <leader>go or <leader>Go to open the gitlab link in browser important for ipynb
 --  ideally should work upon existing telescope and vimdiff features
@@ -475,6 +475,8 @@ if vim.g.neovide then
   vim.o.smoothscroll = false
   vim.o.lazyredraw   = false
 
+  vim.g.neovide_theme = "auto"
+
   vim.g.neovide_cursor_animation_length   = 0
   vim.g.neovide_cursor_trail_size         = 0
   vim.g.neovide_cursor_antialiasing       = false
@@ -560,16 +562,13 @@ if vim.g.neovide then
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-8>",  ":8tabn<CR>",       { desc = "Go to tab 8"               })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-9>",  ":9tabn<CR>",       { desc = "Go to tab 9"               })
 
-  -- TODO make these commands reset the previous window state if pressed a
-  -- If it is possible to preserve the windows maybe we could just open cut buffer in a new tab?
   local function tab_view()
-    -- TODO the logic is incomplete here
-
+    -- TODO the logic is incomplete here. It needs to track the original source
+    -- e.g. if there is a buffer open
     local tab = vim.api.nvim_get_current_tabpage()
     local buf = vim.api.nvim_get_current_buf()
     local name = vim.api.nvim_buf_get_name(buf)
     local n_windows = #vim.api.nvim_tabpage_list_wins(tab)
-
     if tab ~= 0 and n_windows < 2 then
       vim.cmd.tabclose()
       return
@@ -1095,7 +1094,6 @@ require("blink.cmp").setup({
 })
 
 
-
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "sql", "mysql", "plsql", "python" },
   callback = function()
@@ -1128,7 +1126,6 @@ vim.keymap.set({ "v", "x" }, M.a,  send_visual_selection, { desc = "Send visual 
 -----------------------------------------------------------------------------------------------------------------------
 -- Colorscheme(s)
 -----------------------------------------------------------------------------------------------------------------------
-
 vim.pack.add({
   { src = 'https://github.com/rebelot/kanagawa.nvim'   },
   { src = 'https://github.com/neanias/everforest-nvim' },
@@ -1139,17 +1136,5 @@ vim.pack.add({
 require("rose-pine").setup({ styles = { italic = false } })
 require("everforest").setup({ italics = false, disable_italic_comments = true, background = 'hard' })
 require("kanagawa").setup({keywordStyle = { italic = false},  commentStyle = { italic = false } })
-
-local function system_background()
-  local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
-  if not handle then
-    return "light"
-  end
-  local result = handle:read("*a")
-  handle:close()
-  return result:match("Dark") and "dark" or "light"
-end
-
-vim.o.background = system_background()
 
 vim.cmd("colorscheme rose-pine")
