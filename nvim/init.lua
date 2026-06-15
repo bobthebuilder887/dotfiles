@@ -534,6 +534,7 @@ if vim.g.neovide then
   -- TODO: think of other common mac os shortcuts. What about windw management?
   -- TODO: Perhaps some way of moving external buffers into new windows?
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-s>",  vim.cmd.write,      { desc = "Save file"                 })
+  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-q>",  buffer_delete,      { desc = "Delete buffer"             })
 
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-=>",  upscale,            { desc = "Scale up Neovide"          })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-->",  downscale,          { desc = "Scale down Neovide"        })
