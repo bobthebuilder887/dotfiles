@@ -136,11 +136,11 @@ vim.o.splitright      = true
 vim.o.splitbelow      = true
 
 -- Basic Code completion TODO: I believe Blink overrides these
-vim.o.complete        = ".,w,b,i"
-vim.o.completeopt     = "menuone,popup,noinsert,noselect"
-vim.o.omnifunc        = "v:lua.vim.lsp.omnifunc"
-vim.o.wildmenu        = true
-vim.o.wildmode        = "longest:full,full"
+-- vim.o.complete        = ".,w,b,i"
+-- vim.o.completeopt     = "menuone,popup,noinsert,noselect"
+-- vim.o.omnifunc        = "v:lua.vim.lsp.omnifunc"
+-- vim.o.wildmenu        = true
+-- vim.o.wildmode        = "longest:full,full"
 
 vim.o.cmdheight = 1
 vim.opt.shortmess:append("I") -- no intro spam
