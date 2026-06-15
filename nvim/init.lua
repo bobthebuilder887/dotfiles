@@ -1,21 +1,22 @@
 -- HIGH
 -- TODO: Improved ClickHouse support, especially better syntax support but also some LSP support would be amazing
+-- TODO: Improve DBUI and DBOUT. In particular improve window and buffer management around this plugin for better workflow with sql
+-- potentially switch to dbee for pagination, better lsp support and query log
 -- TODO: Lua-lsp needs to also be able to autocomplete require('plugin') type calls (+ go to plugin definition)
 -- TODO: VERSION-CONTROL Need to improve my diff workflow for comparing both undo file histories (debug gpt version for git)
--- TODO: IMPROVE GIT WORKFLOW: - add common git commands / lazygit floating terminal for neovim leader + g/G + command
+-- TODO: IMPROVE GIT WORKFLOW: - add common git commands /  for neovim leader + g/G + command
+--  would also be neat to have diagnostic type thing for who did which part of the code in normal mode
 --  Need to be able to do something like <leader>go or <leader>Go to open the gitlab link in browser important for ipynb
 --  ideally should work upon existing telescope and vimdiff features
 
 -- MEDIUM
 -- TODO: better folder navigation (add a filetree of some sorts make neovide as stand-alone as possible)
 -- On a new window/tab it should not launch a new buffer but switch to netrw?
--- TODO: Improve debugging neovim. Make various fallback states if plugins break
+-- TODO: Improve debugging neovim. Make various fallback states if plugins break, e.g. neovide, core, treesitter, lsp, cmp
 -- TODO: Improve working with config files. Make a dedicated tab for them (don't open same thing in multiple tabs)
 -- TODO: add python specific tools and settings, including linting, jupyter notebook support and formatting
 -- TODO: Fix markdown issues for hover windows (so that markdown gets loaded + treesitter) 
 -- TODO: Fix ipython cell not being highlighted properly
--- TODO: Improve DBUI and DBOUT. In particular improve window and buffer management around this plugin for better workflow with sql
--- potentially switch to dbee for pagination, better lsp support and query log
 
 -- LOW
 -- TODO: force read-only if a file exists and was never edited by me
@@ -534,7 +535,6 @@ if vim.g.neovide then
   -- TODO: think of other common mac os shortcuts. What about windw management?
   -- TODO: Perhaps some way of moving external buffers into new windows?
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-s>",  vim.cmd.write,      { desc = "Save file"                 })
-  vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-q>",  buffer_delete,      { desc = "Delete buffer"             })
 
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-=>",  upscale,            { desc = "Scale up Neovide"          })
   vim.keymap.set({ "n", "v", "x", "i", "c", "t" }, "<D-->",  downscale,          { desc = "Scale down Neovide"        })
@@ -720,6 +720,8 @@ require('gitsigns').setup {
     col = 1
   },
 }
+
+vim.keymap.set("n", "<leader>tb", "<cmd>Gitsigns toggle_current_line_blame<CR>", { desc = "Toggle git blame" })
 -----------------------------------------------------------------------------------------------------------------------
 -- DADBOD
 -----------------------------------------------------------------------------------------------------------------------
