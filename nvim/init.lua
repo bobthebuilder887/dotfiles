@@ -476,6 +476,8 @@ if vim.g.neovide then
   vim.o.smoothscroll = false
   vim.o.lazyredraw   = false
 
+  vim.g.neovide_opacity = 0.90
+  vim.g.neovide_normal_opacity = 0.90
   vim.g.neovide_theme = "auto"
 
   vim.g.neovide_cursor_animation_length   = 0
@@ -483,8 +485,9 @@ if vim.g.neovide then
   vim.g.neovide_cursor_antialiasing       = false
   vim.g.neovide_cursor_animation_length   = 0
 
-  vim.g.neovide_floating_blur_amount_x    = 0
-  vim.g.neovide_floating_blur_amount_y    = 0
+  vim.g.neovide_window_blurred = true
+  vim.g.neovide_floating_blur_amount_x    = 4
+  vim.g.neovide_floating_blur_amount_y    = 4
   vim.g.neovide_position_animation_length = 0
   vim.g.neovide_scroll_animation_length   = 0 -- .1
 
@@ -1164,7 +1167,7 @@ vim.pack.add({
   { src = 'https://github.com/neanias/everforest-nvim' },
   { src = 'https://github.com/rose-pine/neovim'        },
 })
- 
+vim.cmd("colorscheme rose-pine-main")
 -- Disable italic formatting from all custom color schemes
 require("rose-pine").setup({ styles = { italic = false } })
 require("everforest").setup({ italics = false, disable_italic_comments = true, background = 'hard' })
