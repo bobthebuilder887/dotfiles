@@ -83,6 +83,7 @@ alias a='source ./.venv/bin/activate'
 alias d=deactivate
 alias py='./.venv/bin/ipython'
 alias ipython='./.venv/bin/ipython'
+alias trr='tmux source-file ~/.config/tmux/tmux.conf'
 
 source $ZDOTDIR/plugins.zsh
 source $ZDOTDIR/fzf.zsh

@@ -25,3 +25,16 @@ keybind = cmd+shift+left_bracket=text:\x02p
 keybind = cmd+shift+right_bracket=text:\x02n
 # Close current tmux window
 keybind = cmd+w=text:\x02&
+# Split tmux panes
+keybind = cmd+n=text:\x02n
+keybind = cmd+shift+n=text:\x02N
+# Navigate tmux panes
+keybind = cmd+h=text:\x02h
+keybind = cmd+j=text:\x02j
+keybind = cmd+k=text:\x02k
+keybind = cmd+l=text:\x02l
+# Resize tmux panes
+keybind = cmd+shift+h=text:\x02H
+keybind = cmd+shift+j=text:\x02J
+keybind = cmd+shift+k=text:\x02K
+keybind = cmd+shift+l=text:\x02L
