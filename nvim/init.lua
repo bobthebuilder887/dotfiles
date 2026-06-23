@@ -828,6 +828,7 @@ require("telescope").setup({
       height          = 0.99,
       preview_height  = 0.6, -- preview on top
       prompt_position = "bottom",
+      preview_cutoff = 0,
     },
   },
     extensions = {fzf = {}}
@@ -1029,15 +1030,18 @@ local function fff_files(opts)
   end
 end
 
-local function cfg_files()     fff_files({ cwd = cfg_path      }) end
 local function sql_files()     fff_files({ cwd = query_path    }) end
 local function project_files() fff_files({ cwd = projects_path }) end
 
-vim.keymap.set("n", "<leader>ff", function() fff.find_files() end, { desc = "fff files in local dir" })
-vim.keymap.set("n", "<leader>fp", project_files,                   { desc = "fff files in Projects"  })
-vim.keymap.set("n", "<leader>fq", sql_files,                       { desc = "fff queries"            })
-vim.keymap.set("n", "<leader>cc", cfg_files,                       { desc = "fff configs"            })
-vim.keymap.set("n", "<leader>fg", function() fff.live_grep() end,  { desc = "fff live grep"          })
+-- Needs to show hidden and gitignore, otherwise useless
+local function cfg_files()     fff_files({ cwd = cfg_path }) end
+local function home_files()    fff_files({ cwd = home     }) end
+
+vim.keymap.set("n", "<leader>ff", fff.find_files, { desc = "fff files in local dir" })
+vim.keymap.set("n", "<leader>fp", project_files,  { desc = "fff files in Projects"  })
+vim.keymap.set("n", "<leader>fq", sql_files,      { desc = "fff queries"            })
+vim.keymap.set("n", "<leader>cc", cfg_files,      { desc = "fff configs"            })
+vim.keymap.set("n", "<leader>fg", fff.live_grep,  { desc = "fff live grep"          })
 
 -----------------------------------------------------------------------------------------------------------------------
 -- Indentation lines MINI and INDENT-BLANKLINE
@@ -1150,30 +1154,21 @@ function _G.get_oil_winbar()
   end
 end
 
-require("oil").setup({
-  win_options = {
-    winbar = "%!v:lua.get_oil_winbar()",
-  },
-})
-
-
+require("oil").setup({ win_options = { winbar = "%!v:lua.get_oil_winbar()" }, view_options = { show_hidden = true } })
 vim.keymap.set("n", "<D-o>", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { desc = "Open parent directory" })
-
 
 -----------------------------------------------------------------------------------------------------------------------
 -- Colorscheme(s)
 -----------------------------------------------------------------------------------------------------------------------
 vim.pack.add({
-   
   { src = 'https://github.com/rebelot/kanagawa.nvim'   },
   { src = 'https://github.com/neanias/everforest-nvim' },
   { src = 'https://github.com/rose-pine/neovim'        },
 })
-vim.cmd("colorscheme rose-pine-main")
 -- Disable italic formatting from all custom color schemes
 require("rose-pine").setup({ styles = { italic = false } })
 require("everforest").setup({ italics = false, disable_italic_comments = true, background = 'hard' })
 require("kanagawa").setup({keywordStyle = { italic = false},  commentStyle = { italic = false } })
 
-vim.cmd("colorscheme rose-pine")
+vim.cmd("colorscheme rose-pine-main")

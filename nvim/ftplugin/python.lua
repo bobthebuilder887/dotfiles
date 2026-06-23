@@ -114,6 +114,7 @@ local function run_current_cell()
 end
 
 local function run_file()
+  vim.cmd.write()
   vim.cmd.IPythonCellRun()
   Terminal.preview()
 end
