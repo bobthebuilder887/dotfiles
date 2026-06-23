@@ -78,6 +78,7 @@ alias zrc='nvim "$ZDOTDIR"/.zshrc && source "$ZDOTDIR"/.zshrc'
 alias vrc="nvim ~/.config/nvim/init.lua"
 alias e=exit
 alias o=open
+alias b=btop
 alias a='source ./.venv/bin/activate'
 alias d=deactivate
 alias py='./.venv/bin/ipython'
